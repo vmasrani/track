@@ -48,6 +48,8 @@ class Project(object):
         Then, every metric name that was ever logged is a column in the
         metric_schema_union.
         """
+        if isinstance(trial_ids, str):
+            trial_ids = [trial_ids]
         metadata_folder = os.path.join(self.log_dir, constants.METADATA_FOLDER)
         dfs = []
         # TODO: various file-creation corner cases like the result file not
@@ -62,6 +64,9 @@ class Project(object):
             assert os.path.isfile(result_file), result_file
             dfs.append(pd.read_json(result_file, typ='frame', lines=True))
         df = pd.concat(dfs, axis=0, ignore_index=True, sort=False)
+
+        if df.shape == (0, 0):
+            print("Results empty")
         return df
 
 
