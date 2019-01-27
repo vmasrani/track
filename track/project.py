@@ -35,7 +35,7 @@ class Project(object):
     def ids(self):
         return self._ids
 
-    def results(self, trial_ids):
+    def results(self, trial_ids, with_params=True):
         """
         Accepts a sequence of trial ids and returns a pandas dataframe
         with the schema
@@ -67,6 +67,10 @@ class Project(object):
 
         if df.shape == (0, 0):
             print("Results empty")
+
+        if with_params:
+            df = df.merge(self._ids, on='trial_id')
+
         return df
 
 
