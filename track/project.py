@@ -35,10 +35,14 @@ class Project(object):
     def ids(self):
         return self._ids
 
-    def results(self, trial_ids, with_params=True):
+    @property
+    def trial_ids(self):
+        return self._ids['trial_id'].tolist()
+
+    def results(self, trial_ids=None, with_params=True):
         """
         Accepts a sequence of trial ids and returns a pandas dataframe
-        with the schema
+        with the schema. If no trial ids are passed, return all results.
 
         trial_id, iteration?, *metric_schema_union
 
@@ -48,6 +52,8 @@ class Project(object):
         Then, every metric name that was ever logged is a column in the
         metric_schema_union.
         """
+        if trial_ids is None:
+            trial_ids = self.trial_ids
         if isinstance(trial_ids, str):
             trial_ids = [trial_ids]
         metadata_folder = os.path.join(self.log_dir, constants.METADATA_FOLDER)
@@ -72,7 +78,6 @@ class Project(object):
             df = df.merge(self._ids, on='trial_id')
 
         return df
-
 
     def fetch_artifact(self, trial_id, prefix):
         """
